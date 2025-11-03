@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Behavior Builder (FBM)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Behavior Builder (FBM)</h1>
+    <button id="exportBtn">Export Data</button>
+    <button id="importBtn">Import Data</button>
+    <input type="file" id="importFile" hidden />
+  </header>
+
+  <main>
+    <section id="onboarding">
+      <h2>Create New Behavior</h2>
+      <input id="behaviorTitle" placeholder="Behavior name (e.g. Read 1 page)" />
+      <input id="behaviorAnchor" placeholder="Anchor (e.g. After I brush teeth...)" />
+      <input id="behaviorTiny" placeholder="Tiny version (e.g. Read 1 paragraph)" />
+      <button id="addBehaviorBtn">Add Behavior</button>
+      <select id="behaviorSelect"></select>
+    </section>
+
+    <section id="daily">
+      <h2>Daily Check-In</h2>
+      <label>Motivation (0–10):</label>
+      <input type="number" id="motivation" min="0" max="10" />
+      <label>Ability (0–10):</label>
+      <input type="number" id="ability" min="0" max="10" />
+      <label>Did you do it?</label>
+      <select id="did">
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+      <input id="note" placeholder="Optional note..." />
+      <button id="saveEntryBtn">Save Entry</button>
+    </section>
+
+    <section id="graph">
+      <h2>Fogg Behavior Model Graph</h2>
+      <svg id="fbmGraph" width="400" height="400"></svg>
+    </section>
+
+    <section id="suggestions">
+      <h2>Suggestions</h2>
+      <div id="suggestionBox"></div>
+    </section>
+
+    <section id="history">
+      <h2>History</h2>
+      <table id="historyTable">
+        <thead>
+          <tr>
+            <th>Date</th><th>M</th><th>A</th><th>Did</th><th>Note</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>All data stored locally. Ethical suggestions only, no medical advice.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
