@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Behavior Builder (FBM)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ===== Welcome / Login (full screen) ===== -->
+  <section id="welcomeScreen" class="welcome">
+    <div class="welcome-card">
+      <h1>Behavior Builder <span class="subtle">(FBM)</span></h1>
+      <p class="muted">Support your daily behavior change with focus-first logging and research-grade exports.</p>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="signin">Sign in</button>
+        <button class="tab" data-tab="create">Create account</button>
+        <button class="tab" data-tab="guest">Guest</button>
+      </div>
+
+      <div class="tab-panels">
+        <!-- Sign in -->
+        <div class="tab-panel" data-panel="signin" style="display:block">
+          <div id="accountList" class="account-list"></div>
+        </div>
+
+        <!-- Create -->
+        <div class="tab-panel" data-panel="create">
+          <label class="field"><span>Display name</span><input id="newUserName" placeholder="e.g., Taechasith" /></label>
+          <label class="field"><span>Email (optional)</span><input id="newUserEmail" type="email" placeholder="you@example.com" /></label>
+          <label class="field"><span>PIN (optional, 4–12 digits)</span><input id="newUserPin" type="password" inputmode="numeric" /></label>
+          <div class="toggle-row">
+            <span>Private Session (don’t keep data after browser closes)</span>
+            <div id="createPrivateToggle" class="toggle off" tabindex="0" aria-pressed="false">No</div>
+          </div>
+          <button id="createUserBtn" class="btn primary big">Create & Use</button>
+        </div>
+
+        <!-- Guest -->
+        <div class="tab-panel" data-panel="guest">
+          <p>Use a temporary **Guest** profile. Data is kept only for this browser session.</p>
+          <button id="useGuestBtn" class="btn ghost big">Continue as Guest</button>
+        </div>
+      </div>
+
+      <div class="welcome-consent">
+        <label class="field checkbox">
+          <input id="consentChk" type="checkbox" /> I understand my data stays on this device unless I export it.
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== App header ===== -->
+  <header class="app-header">
+    <div class="title-wrap">
+      <h1>Behavior Builder <span class="subtle">(FBM)</span></h1>
+      <div id="today" class="today"></div>
+    </div>
+    <div class="header-actions">
+      <span id="currentUserBadge" class="badge">User: —</span>
+      <button id="openSettingsBtn" class="btn ghost">⚙️ Settings</button>
+      <button id="switchUserBtn" class="btn ghost">👤 Switch</button>
+      <button id="exportOptionsBtn" class="btn ghost">📤 Export</button>
+      <button id="importBtn" class="btn ghost">📥 Import</button>
+      <button id="resetBtn"  class="btn danger">🗑 Reset User Data</button>
+      <input id="importFile" type="file" accept="application/json,text/csv" hidden />
+    </div>
+  </header>
+
+  <main class="grid">
+    <!-- Left: Behaviors -->
+    <section class="card" id="behaviorsCard" aria-labelledby="behaviorsTitle">
+      <div class="card-header">
+        <h2 id="behaviorsTitle">My Behaviors</h2>
+        <button id="addBehaviorBtn" class="btn primary">➕ Add</button>
+      </div>
+      <ul id="behaviorList" class="behavior-list" role="list"></ul>
+    </section>
+
+    <!-- Center: Daily Log -->
+    <section class="card focus" id="dailyCard" aria-labelledby="dailyTitle">
+      <div class="card-header">
+        <h2 id="dailyTitle">Daily Log</h2>
+        <div id="selectedBehaviorName" class="badge">No behavior selected</div>
+      </div>
+
+      <div id="focusBanner" class="focus-banner hidden">
+        Focus Mode is on — history/graph are hidden until you log today. This reduces bias and supports autonomy.
+      </div>
+
+      <div class="field">
+        <label for="motivation">💡 Motivation: <span id="motivationVal" class="pill">0</span></label>
+        <input id="motivation" type="range" min="0" max="10" step="1" value="0" />
+      </div>
+
+      <div class="field">
+        <label for="ability">⚙️ Ability: <span id="abilityVal" class="pill">0</span></label>
+        <input id="ability" type="range" min="0" max="10" step="1" value="0" />
+      </div>
+
+      <div class="toggle-row" role="group" aria-label="Did you do it?">
+        <span>🌱 Did you do it?</span>
+        <div class="toggle" id="didToggle" tabindex="0" aria-pressed="true">Yes</div>
+      </div>
+
+      <div class="field">
+        <label for="note">Note (optional)</label>
+        <input id="note" type="text" placeholder="Barrier, feeling, or context..." />
+      </div>
+
+      <button id="saveEntryBtn" class="btn big primary" aria-label="Save today's entry">Save today</button>
+
+      <div id="suggestionBox" class="suggestion hidden" aria-live="polite"></div>
+    </section>
+
+    <!-- Right: Graph -->
+    <section class="card" id="graphCard" aria-labelledby="graphTitle">
+      <div class="card-header">
+        <h2 id="graphTitle">FBM Graph</h2>
+        <div class="legend">
+          <span class="dot success"></span> success
+          <span class="dot borderline"></span> borderline
+          <span class="dot fail"></span> fail
+        </div>
+      </div>
+
+      <div class="graph-controls">
+        <label>Show last <span id="daysVal">14</span>d</label>
+        <input id="rangeDays" type="range" min="7" max="90" step="1" value="14" />
+        <label class="field checkbox">
+          <input id="showPathChk" type="checkbox" checked /> Show path
+        </label>
+        <label class="field checkbox">
+          <input id="showSeqChk" type="checkbox" /> Show sequence numbers
+        </label>
+      </div>
+
+      <div class="svg-wrap">
+        <svg id="fbmGraph" viewBox="0 0 420 420" width="420" height="420" role="img" aria-label="Fogg Behavior Model graph"></svg>
+      </div>
+
+      <div id="pointDetails" class="point-details">
+        <div class="pd-title">Point Details</div>
+        <div class="pd-body muted">Hover or tap a point to see its exact date & time.</div>
+      </div>
+    </section>
+
+    <!-- Bottom: History -->
+    <section class="card span-3" id="historyCard" aria-labelledby="historyTitle">
+      <div class="card-header">
+        <h2 id="historyTitle">Recent History</h2>
+        <div class="filters">
+          <button data-range="7"  class="btn ghost small filter-btn">7d</button>
+          <button data-range="30" class="btn ghost small filter-btn">30d</button>
+          <button data-range="all" class="btn ghost small filter-btn active">All</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table" id="historyTable">
+          <thead>
+            <tr>
+              <th>Date</th><th>Time</th><th>M</th><th>A</th><th>Did</th><th>Note</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="fade-mask"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    Your data stays private on this device (or this session, if enabled). Be kind to yourself — grow ability one tiny step at a time. 🌱
+  </footer>
+
+  <!-- Add/Edit Behavior Modal -->
+  <dialog id="behaviorModal" class="modal">
+    <form method="dialog" class="modal-body" id="behaviorForm">
+      <h3 id="behaviorModalTitle">Add Behavior</h3>
+      <label class="field"><span>Title</span><input id="behaviorTitle" required placeholder="Read 1 page" /></label>
+      <label class="field"><span>Anchor (prompt)</span><input id="behaviorAnchor" placeholder="After I brush teeth, I will..." /></label>
+      <label class="field"><span>Tiny version (≤ 2 minutes)</span><input id="behaviorTiny" placeholder="Read one paragraph" /></label>
+      <menu class="modal-actions">
+        <button value="cancel" class="btn ghost">Cancel</button>
+        <button id="saveBehaviorBtn" value="default" class="btn primary">Save</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <!-- Export options -->
+  <dialog id="exportModal" class="modal">
+    <form method="dialog" class="modal-body" id="exportForm">
+      <h3>Export Options</h3>
+      <label class="field checkbox"><input type="checkbox" id="optCSV" checked /> Export tidy CSV (entries)</label>
+      <label class="field checkbox"><input type="checkbox" id="optJSON" checked /> Export JSON package (+ codebook)</label>
+      <label class="field checkbox"><input type="checkbox" id="optNotes" checked /> Include notes (may contain PII)</label>
+      <label class="field checkbox"><input type="checkbox" id="optBehaviorMeta" checked /> Include behavior metadata in CSV</label>
+      <menu class="modal-actions">
+        <button value="cancel" class="btn ghost">Cancel</button>
+        <button id="doExportBtn" value="default" class="btn primary">Export</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <!-- Settings -->
+  <dialog id="settingsModal" class="modal">
+    <div class="modal-body">
+      <h3>Settings</h3>
+      <label class="field checkbox">
+        <input id="focusModeChk" type="checkbox" checked />
+        Focus Mode (hide history & graph until today is saved)
+      </label>
+      <label class="field checkbox">
+        <input id="blindHistoryChk" type="checkbox" checked />
+        Blind History (don’t show aggregate stats before today’s entry)
+      </label>
+      <label class="field checkbox">
+        <input id="privateSessionChk" type="checkbox" />
+        Private Session (store data in sessionStorage instead of localStorage)
+      </label>
+      <menu class="modal-actions">
+        <button id="closeSettingsBtn" class="btn primary">Done</button>
+      </menu>
+    </div>
+  </dialog>
+
+  <!-- Confirm Reset -->
+  <dialog id="confirmModal" class="modal">
+    <div class="modal-body">
+      <h3>Reset current user's data?</h3>
+      <p>This deletes all behaviors and entries for this user on this device.</p>
+      <menu class="modal-actions">
+        <button id="cancelReset" class="btn ghost">Cancel</button>
+        <button id="confirmReset" class="btn danger">Delete</button>
+      </menu>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

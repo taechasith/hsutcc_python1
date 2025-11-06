@@ -1,0 +1,5 @@
+user_id,behavior_id,behavior_title,date,time,datetime,motivation,ability,did,did_numeric,note,anchor,tiny
+guest_3d5bb721c5aa079c,a81506f0b09ea412687d06673b62ddcd,wake up early,2025-11-06,13:26,2025-11-06T06:26:56.952Z,2,6,yes,1,,After I wake up I will sit up,i will wake up 5 mins ealier
+guest_3d5bb721c5aa079c,a81506f0b09ea412687d06673b62ddcd,wake up early,2025-11-06,13:27,2025-11-06T06:27:06.392Z,2,7,yes,1,,After I wake up I will sit up,i will wake up 5 mins ealier
+guest_3d5bb721c5aa079c,a81506f0b09ea412687d06673b62ddcd,wake up early,2025-11-06,13:27,2025-11-06T06:27:07.584Z,2,8,yes,1,,After I wake up I will sit up,i will wake up 5 mins ealier
+guest_3d5bb721c5aa079c,a81506f0b09ea412687d06673b62ddcd,wake up early,2025-11-06,13:27,2025-11-06T06:27:09.490Z,9,8,yes,1,,After I wake up I will sit up,i will wake up 5 mins ealier
